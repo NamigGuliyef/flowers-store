@@ -1,13 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { App1Controller } from './app1/app1.controller';
-import { App1Module } from './app1/app1.module';
 import { FlowersModule } from './flowers/flowers.module';
+import { MicroserviceModule } from './microservice/microservice.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
-  imports: [App1Module, FlowersModule],
-  controllers: [AppController, App1Controller],
+  imports: [
+    FlowersModule,
+    MicroserviceModule,
+    ClientsModule.register([
+      {
+        name: 'SEND MESSAGE',
+        transport: Transport.TCP,
+        options: { host: 'localhost', port: 8877 },
+      },
+    ]),
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
